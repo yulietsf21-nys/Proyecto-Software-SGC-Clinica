@@ -17,7 +17,7 @@ def obtener_usuarios():
 
     try:
         cursor = conexion.cursor()
-        cursor.execute("select id_usuario, nombre, apellido, correo, contrasena, rol from usuarios;")
+        cursor.execute("SELECT id_usuario, nombre, apellido, correo, contrasena, rol FROM usuarios WHERE activo = TRUE OR activo IS NULL")
         registros = cursor.fetchall()    
 
         usuarios = []
@@ -59,7 +59,8 @@ def crear_usuario(usuario: UsuarioSchema):
             usuario.rol
         )
         cursor.execute(query, valores)
-        id_generado = cursor.fetchone([0])
+        resultado = cursor.fetchone()
+        id_generado = resultado[0] if resultado else None
         conexion.commit()
 
         cursor.close()
@@ -69,6 +70,55 @@ def crear_usuario(usuario: UsuarioSchema):
         print(f"Error al crear usuario: {e}")
         return {"error": "No se pudo registrar el usuario"}
 
+
+# Función para actualizar un usuario en la base de datos
+def modificar_usuario(usuario_id: int, usuario):
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    try:
+        sql = """
+            UPDATE usuarios 
+            SET nombre = %s, apellido = %s, correo = %s, contrasena = %s, rol = %s 
+            WHERE id_usuario = %s
+        """
+        valores = (usuario.nombre, 
+                   usuario.apellido, 
+                   usuario.correo, 
+                   usuario.contrasena, 
+                   usuario.rol, 
+                   usuario_id)
+        cursor.execute(sql, valores)
+        conexion.commit()
+        
+        if cursor.rowcount == 0:
+            return {"error": "Usuario no encontrado"}
+        return {"mensaje": "Usuario actualizado exitosamente"}
+    except Exception as e:
+        conexion.rollback()
+        return {"error": str(e)}
+    finally:
+        cursor.close()
+        conexion.close()
+
+# Eliminación lógica de un usuario (cambiar estado a inactivo)
+def eliminacion_logica_usuario(usuario_id: int):
+    conexion = conectar_db()
+    cursor = conexion.cursor()
+    try:
+        # Eliminación lógica: actualizamos el campo activo a FALSE en lugar de borrar la fila
+        sql = "UPDATE usuarios SET activo = FALSE WHERE id_usuario = %s"
+        cursor.execute(sql, (usuario_id,))
+        conexion.commit()
+        
+        if cursor.rowcount == 0:
+            return {"error": "Usuario no encontrado"}
+        return {"mensaje": "Usuario desactivado lógicamente con éxito"}
+    except Exception as e:
+        conexion.rollback()
+        return {"error": str(e)}
+    finally:
+        cursor.close()
+        conexion.close()
 
  # 2. Controlador de Servicios Médicos
  # Consultar servicio

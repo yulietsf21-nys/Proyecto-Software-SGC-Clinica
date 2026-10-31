@@ -25,97 +25,79 @@
     <div class="container mt-4">
         <h2 class="mb-4 text-primary fw-bold">Gestión de Usuarios</h2>
 
-        <!-- Formulario para Registrar Usuario -->
+        <!-- Formulario para Registrar / Editar Usuario -->
         <div class="card p-4 mb-4">
-            <h5 class="mb-3">Registrar Nuevo Usuario</h5>
+            <h5 class="mb-3" id="formTitulo">Registrar / Modificar Usuario</h5>
             <form id="formUsuario">
+                <!-- Campo oculto para almacenar el ID en modo edición -->
+                <input type="hidden" id="usuarioId">
+
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Nombre</label>
+                        <label for="nombre" class="form-label">Nombre</label>
                         <input type="text" class="form-control" id="nombre" required>
                     </div>
+                    
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Correo</label>
-                        <input type="email" class="form-control" id="correo" required>
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="apellido" required>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success">Guardar Usuario</button>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="correo" class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="correo" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="contrasena" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="contrasena">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="rol" class="form-label">Rol</label>
+                    <select class="form-select" id="rol" required>
+                        <option value="Auxiliar">Auxiliar</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Médico">Médico</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success" id="btnGuardar">Guardar Usuario</button>
+                    <button type="button" class="btn btn-secondary" id="btnCancelar" onclick="limpiarFormulario()" style="display: none;">Cancelar Edición</button>
+                </div>
             </form>
         </div>
 
         <!-- Tabla para Listar Usuarios -->
         <div class="card p-4">
             <h5 class="mb-3">Lista de Usuarios Registrados</h5>
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaUsuarios">
-                    <!-- Los datos se llenarán dinámicamente con JavaScript -->
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuarios">
+                        <!-- Los datos se llenarán dinámicamente con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
-    <!-- Script para conectar con el Backend -->
-    <script>
-        const API_URL = 'http://127.0.0.1:8000';
-
-        // Función para cargar los usuarios (GET)
-        async function cargarUsuarios() {
-            try {
-                const response = await fetch(`${API_URL}/usuarios`);
-                const usuarios = await response.json();
-                const tbody = document.getElementById('tablaUsuarios');
-                tbody.innerHTML = '';
-                
-                usuarios.forEach(user => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${user.id || 'N/A'}</td>
-                            <td>${user.nombre}</td>
-                            <td>${user.correo}</td>
-                        </tr>
-                    `;
-                });
-            } catch (error) {
-                console.error("Error al obtener usuarios:", error);
-            }
-        }
-
-        // Manejar el envío del formulario (POST)
-        document.getElementById('formUsuario').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nuevoUsuario = {
-                nombre: document.getElementById('nombre').value,
-                correo: document.getElementById('correo').value
-            };
-
-            try {
-                const response = await fetch(`${API_URL}/usuarios`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(nuevoUsuario)
-                });
-
-                if (response.ok) {
-                    alert('¡Usuario registrado con éxito!');
-                    document.getElementById('formUsuario').reset();
-                    cargarUsuarios();
-                } else {
-                    alert('Error al registrar el usuario.');
-                }
-            } catch (error) {
-                console.error("Error en la petición POST:", error);
-            }
-        });
-
-        // Cargar al iniciar la página
-        window.onload = cargarUsuarios;
-    </script>
+<!-- Enlazamos el archivo de lógica JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
+    
 </body>
 </html>
