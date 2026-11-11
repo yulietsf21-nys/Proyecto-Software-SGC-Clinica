@@ -2,7 +2,7 @@ from servicios import (
     obtener_usuarios, crear_usuario, modificar_usuario, eliminacion_logica_usuario,
     obtener_servicios, crear_servicio,
     obtener_insumos, crear_insumo,
-    obtener_atenciones, crear_atencion,
+    obtener_atenciones, crear_atencion, modificar_atencion, eliminar_atencion,
     obtener_atencion_insumos, crear_detalle_atencion
 )
 
@@ -40,6 +40,12 @@ def obtener_atenciones_db():
 
 def crear_atencion_db(atencion):
     return crear_atencion(atencion)
+
+def modificar_atencion_db(atencion_id, atencion):
+    return modificar_atencion(atencion_id, atencion)
+
+def eliminar_atencion_db(atencion_id):
+    return eliminar_atencion(atencion_id)
 
 # 5. Detalle de Insumos
 def obtener_atencion_insumos_db():

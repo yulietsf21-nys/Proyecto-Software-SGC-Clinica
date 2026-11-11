@@ -296,6 +296,49 @@ def crear_atencion(atencion: AtencionSchema):
         print(f"Error al registrar atención: {e}")
         return {"error": "No se pudo registrar la atención médica"}    
 
+# Actualizar Atención (PUT) 
+def modificar_atencion(atencion_id, atencion):
+    conexion = conectar_db()
+    if conexion is None:
+        return {"error": "No se pudo conectar a la base de datos"}
+    try:
+        cursor = conexion.cursor()
+        query = """
+            UPDATE atenciones 
+            SET id_servicio = %s, area_departamento = %s, fecha_atencion = %s, costo_total = %s
+            WHERE id_atencion = %s
+        """
+        cursor.execute(query, (
+            atencion.id_servicio, 
+            atencion.area_departamento, 
+            atencion.fecha_atencion, 
+            atencion.costo_total, 
+            atencion_id
+        ))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return {"mensaje": "Atención actualizada exitosamente"}
+    except Exception as e:
+        print(f"Error al actualizar atención: {e}")
+        return {"error": "Error al actualizar la atención en la base de datos"}
+
+# Eliminar Atención (DELETE)
+def eliminar_atencion(atencion_id):
+    conexion = conectar_db()
+    if conexion is None:
+        return {"error": "No se pudo conectar a la base de datos"}
+    try:
+        cursor = conexion.cursor()
+        query = "DELETE FROM atenciones WHERE id_atencion = %s"
+        cursor.execute(query, (atencion_id,))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return {"mensaje": "Atención eliminada exitosamente"}
+    except Exception as e:
+        print(f"Error al eliminar atención: {e}")
+        return {"error": "Error al eliminar la atención en la base de datos"}
 
 # 5. Controlador de Detalle de Insumos por Atención
 # Consultar Detalle de Insumos por Atención 

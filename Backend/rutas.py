@@ -12,7 +12,7 @@ from controladores import (
     obtener_usuarios_db, crear_usuario_db, actualizar_usuario_db, eliminar_usuario_db,
     obtener_servicios_db, crear_servicio_db,
     obtener_insumos_db, crear_insumo_db,
-    obtener_atenciones_db, crear_atencion_db,
+    obtener_atenciones_db, crear_atencion_db, modificar_atencion_db, eliminar_atencion_db,
     obtener_atencion_insumos_db, crear_detalle_atencion_db
 )
 
@@ -65,6 +65,14 @@ def ver_atenciones():
 @router.post("/atenciones")
 def registrar_atencion(atencion: AtencionSchema):
     return crear_atencion_db(atencion)
+
+@router.put("/atenciones/{atencion_id}")
+def actualizar_atencion(atencion_id: int, atencion: AtencionSchema):
+    return modificar_atencion_db(atencion_id, atencion)
+
+@router.delete("/atenciones/{atencion_id}")
+def eliminar_atencion(atencion_id: int):
+    return eliminar_atencion_db(atencion_id)
 
 
 # Rutas de Atención e Insumos
